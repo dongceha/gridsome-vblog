@@ -21,22 +21,22 @@
             return {
                 constantRouterMap: [
                     {
-                        path: '1',
+                        path: '',
                         icon: 'el-icon-star-off',
                         title: '最新动态'
                     },
                     {
-                        path: '2',
+                        path: '/social',
                         icon: 'el-icon-mobile-phone',
                         title: '社交圈'
                     },
                     {
-                        path: '3',
+                        path: '/blog',
                         icon: 'el-icon-edit-outline',
                         title: '博客列表'
                     },
                     {
-                        path: '4',
+                        path: '/project',
                         icon: 'el-icon-service',
                         title: '开源项目'
                     },
