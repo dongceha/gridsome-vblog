@@ -3,7 +3,6 @@
     <div style="min-height: 600px" v-loading="loading">
         <el-card shadow="never" style="margin-bottom: 20px">
             <el-input placeholder="请输入关键字" v-model="searchKey" clearable style="width: 300px"></el-input>
-            <el-button @click="search" icon="el-icon-search" style="margin-left: 10px" circle plain></el-button>
             <el-button @click="$share()" style="margin-left: 10px" icon="el-icon-share" type="warning" plain circle></el-button>
             <el-button type="primary" icon="el-icon-edit" round plain style="float: right;" @click="goAdd">写博文</el-button>
         </el-card>
@@ -11,7 +10,7 @@
         <div v-if="blogs&&blogs.length>0">
             <el-card
               shadow="hover"
-              v-for="(item,index) in blogs"
+              v-for="({node: item},index) in blogs"
               :key="'p'+index"
               style="margin-bottom: 20px"
               v-if="!item.hide">
@@ -34,16 +33,16 @@
                     </el-row>
                 </div>
                 <div style="font-size: 0.9rem;line-height: 1.5;color: #606c71;">
-                    最近更新 {{item.updateTime}}
+                    最近更新 {{item.updated_at}}
                 </div>
                 <div style="font-size: 1.1rem;line-height: 1.5;color: #303133;padding: 10px 0px 0px 0px">
-                    {{item.description}}
+                    {{item.descript}}
                 </div>
             </el-card>
             <div style="text-align: center">
-                <el-pagination @current-change="list" background layout="prev, pager, next" :current-page.sync="query.page" :page-size="query.pageSize"
+                <!-- <el-pagination @current-change="list" background layout="prev, pager, next" :current-page.sync="query.page" :page-size="query.pageSize"
                     :total="query.pageNumber*query.pageSize">
-                </el-pagination>
+                </el-pagination> -->
             </div>
 
         </div>
@@ -56,6 +55,25 @@
     </div>
 </Layout>
 </template>
+<page-query>
+query {
+  blogs: allStrapiBlogLists {
+    edges {
+      node{
+        id
+        title
+        descript
+        name
+        created_at
+        updated_at
+        img{
+          url
+        }
+      }
+    }
+  }
+}
+</page-query>
 <script>
     export default {
         data() {
@@ -67,38 +85,23 @@
                 },
                 loading: false,
                 searchKey: "",
-                blogs: [],
+                // blogs: [],
                 token: '123'
             }
         },
         mounted() {
-            this.list()
+            // this.list()
+        },
+        computed: {
+            blogs() {
+                const edges = this.$page.blogs.edges
+                const blog = edges.filter(({node}) => {
+                    return node.title.indexOf(this.searchKey) > -1
+                })
+                return blog
+            },
         },
         methods: {
-            list() {
-                this.blogs = [
-                    {
-                        title: "2018.5.19 更新",
-                        url: {
-                            "filename": "2018.5.19 更新",
-                            "type": "text/plain",
-                            "language": null,
-                            "raw_url": "https://gist.githubusercontent.com/GitHub-Laziji/391edc7de20627506f8cee6a756f8a34/raw/5942dda57f704f94b978b42cd725f9005d2fe558/2018.5.19%20%E6%9B%B4%E6%96%B0",
-                            "size": 105629
-                        },
-                        description: "1 增加使用帮助\n2 改进readme不存在时的情况",
-                        id: 1,
-                        createTime: "2018-05-18T17:10:06Z",
-                        updateTime: "2018-05-18T17:10:06Z",
-                        hide: false,
-                    }
-                ]
-            },
-            search() {
-                for (let i = 0; i < this.blogs.length; i++) {
-                    this.blogs[i].hide = this.blogs[i].title.indexOf(this.searchKey) < 0
-                }
-            },
             editBlog(index) {
                 if (!this.token) {
                     this.$message({

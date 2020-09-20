@@ -21,7 +21,7 @@
             return {
                 constantRouterMap: [
                     {
-                        path: '',
+                        path: '/',
                         icon: 'el-icon-star-off',
                         title: '最新动态'
                     },
